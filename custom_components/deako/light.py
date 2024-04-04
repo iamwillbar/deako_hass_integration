@@ -1,12 +1,14 @@
 """Light platform for deako."""
 from .const import (
     DOMAIN,
+    NAME,
 )
 
 import logging
 
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS, LightEntity, ColorMode)
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.util.color import value_to_brightness
 from homeassistant.util.percentage import percentage_to_ranged_value
 
@@ -34,6 +36,17 @@ class DeakoLightSwitch(LightEntity):
 
     def on_update(self):
         self.schedule_update_ha_state()
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return the device info."""
+        return DeviceInfo(
+            identifiers={
+                (DOMAIN, self.unique_id)
+            },
+            name=self.name,
+            manufacturer=NAME,
+        )
 
     @property
     def unique_id(self):
@@ -64,15 +77,15 @@ class DeakoLightSwitch(LightEntity):
         """Return the color modes supported by this light."""
         state = self.connection.get_state_for_device(self.uuid)
         if state["dim"] is None:
-            return ColorMode.ONOFF
-        return ColorMode.BRIGHTNESS
+            return [ColorMode.ONOFF]
+        return [ColorMode.BRIGHTNESS]
 
     @property
     def color_mode(self):
         """Return the color mode of this light."""
         state = self.connection.get_state_for_device(self.uuid)
         if state["dim"] is None:
-            return None
+            return ColorMode.ONOFF
         return ColorMode.BRIGHTNESS
 
     async def async_turn_on(self, **kwargs):
