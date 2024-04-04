@@ -220,6 +220,7 @@ class Deako:
         state_change = {"target": uuid, "state": {"power": power, "dim": dim}}
         state_change_dict["data"] = state_change
         state_change_dict["src"] = self.src
+        _LOGGER.debug("Sending control request %s", state_change_dict)
         await self.connection.send_data(json.dumps(state_change_dict))
         self.devices[uuid]["state"]["power"] = power
         self.devices[uuid]["state"]["dim"] = dim
