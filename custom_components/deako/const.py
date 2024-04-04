@@ -1,9 +1,9 @@
 """Constants for Deako."""
 # Base component constants
-NAME = "Deako"
+NAME = "Deako Smart Lighting"
 DOMAIN = "deako"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 ATTRIBUTION = ""
 ISSUE_URL = "https://github.com/sebirdman/deako_hass_integration/issues"
 
