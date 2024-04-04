@@ -9,11 +9,10 @@ import logging
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS, LightEntity, ColorMode)
 from homeassistant.helpers.device_registry import DeviceInfo
-from homeassistant.util.color import value_to_brightness
-from homeassistant.util.percentage import percentage_to_ranged_value
+from homeassistant.util.color import value_to_brightness, brightness_to_value
 
 
-BRIGHTNESS_SCALE = (0, 255)
+BRIGHTNESS_SCALE = (1, 100)
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
@@ -66,7 +65,7 @@ class DeakoLightSwitch(LightEntity):
 
     @property
     def brightness(self):
-        """Return the brightness of this light between 0..255."""
+        """Return the brightness of this light between 1..255."""
         state = self.connection.get_state_for_device(self.uuid)
         if state["dim"] is None:
             return None
@@ -94,8 +93,8 @@ class DeakoLightSwitch(LightEntity):
         if state["dim"] is not None:
             dim = state["dim"]
         if ATTR_BRIGHTNESS in kwargs:
-            dim = percentage_to_ranged_value(BRIGHTNESS_SCALE, kwargs[ATTR_BRIGHTNESS])
-        await self.connection.send_device_control(self.uuid, True, round(dim, 0))
+            dim = brightness_to_value(BRIGHTNESS_SCALE, kwargs[ATTR_BRIGHTNESS])
+        await self.connection.send_device_control(self.uuid, True, round(dim))
 
     async def async_turn_off(self, **kwargs):
         state = self.connection.get_state_for_device(self.uuid)
@@ -103,5 +102,5 @@ class DeakoLightSwitch(LightEntity):
         if state["dim"] is not None:
             dim = state["dim"]
         if ATTR_BRIGHTNESS in kwargs:
-            dim = percentage_to_ranged_value(BRIGHTNESS_SCALE, kwargs[ATTR_BRIGHTNESS])
-        await self.connection.send_device_control(self.uuid, False, round(dim, 0))
+            dim = brightness_to_value(BRIGHTNESS_SCALE, kwargs[ATTR_BRIGHTNESS])
+        await self.connection.send_device_control(self.uuid, False, round(dim))
