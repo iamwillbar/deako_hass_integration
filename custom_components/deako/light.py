@@ -1,8 +1,7 @@
-"""Binary sensor platform for integration_blueprint."""
+"""Light platform for deako."""
 from .const import (
     DOMAIN,
 )
-from homeassistant.components.binary_sensor import BinarySensorEntity
 
 import logging
 
@@ -73,7 +72,7 @@ class DeakoLightSwitch(LightEntity):
         """Return the color mode of this light."""
         state = self.connection.get_state_for_device(self.uuid)
         if state["dim"] is None:
-            return ColorMode.ONOFF
+            return None
         return ColorMode.BRIGHTNESS
 
     async def async_turn_on(self, **kwargs):

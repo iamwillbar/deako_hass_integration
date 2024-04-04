@@ -4,8 +4,8 @@ NAME = "Deako"
 DOMAIN = "deako"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "0.0.1"
-ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
-ISSUE_URL = "https://github.com/custom-components/integration_blueprint/issues"
+ATTRIBUTION = ""
+ISSUE_URL = "https://github.com/sebirdman/deako_hass_integration/issues"
 
 # Icons
 ICON = "mdi:format-quote-close"
