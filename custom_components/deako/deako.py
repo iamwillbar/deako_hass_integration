@@ -1,7 +1,4 @@
-from threading import Timer
 import socket
-import select
-import threading
 import json
 import asyncio
 import logging
@@ -60,6 +57,7 @@ class ConnectionThread(Thread):
 
     async def connect_socket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.setblocking(False)
         # this.s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
         # this.s.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 1)
         # this.s.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 3)
