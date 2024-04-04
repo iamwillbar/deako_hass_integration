@@ -7,8 +7,12 @@ from homeassistant.components.binary_sensor import BinarySensorEntity
 import logging
 
 from homeassistant.components.light import (
-    ATTR_BRIGHTNESS, SUPPORT_BRIGHTNESS, LightEntity)
+    ATTR_BRIGHTNESS, LightEntity, ColorMode)
+from homeassistant.util.color import value_to_brightness
+from homeassistant.util.percentage import percentage_to_ranged_value
 
+
+BRIGHTNESS_SCALE = (0, 255)
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
@@ -54,15 +58,23 @@ class DeakoLightSwitch(LightEntity):
         state = self.connection.get_state_for_device(self.uuid)
         if state["dim"] is None:
             return None
-        return state["dim"] * 2.55
+        return value_to_brightness(BRIGHTNESS_SCALE, state["dim"])
 
     @property
-    def supported_features(self):
-        """Flag supported features."""
+    def supported_color_modes(self):
+        """Return the color modes supported by this light."""
         state = self.connection.get_state_for_device(self.uuid)
         if state["dim"] is None:
-            return 0
-        return SUPPORT_BRIGHTNESS
+            return ColorMode.ONOFF
+        return ColorMode.BRIGHTNESS
+
+    @property
+    def color_mode(self):
+        """Return the color mode of this light."""
+        state = self.connection.get_state_for_device(self.uuid)
+        if state["dim"] is None:
+            return ColorMode.ONOFF
+        return ColorMode.BRIGHTNESS
 
     async def async_turn_on(self, **kwargs):
         state = self.connection.get_state_for_device(self.uuid)
@@ -70,7 +82,7 @@ class DeakoLightSwitch(LightEntity):
         if state["dim"] is not None:
             dim = state["dim"]
         if ATTR_BRIGHTNESS in kwargs:
-            dim = (kwargs[ATTR_BRIGHTNESS] / 255) * 100
+            dim = percentage_to_ranged_value(BRIGHTNESS_SCALE, kwargs[ATTR_BRIGHTNESS])
         await self.connection.send_device_control(self.uuid, True, round(dim, 0))
 
     async def async_turn_off(self, **kwargs):
@@ -79,5 +91,5 @@ class DeakoLightSwitch(LightEntity):
         if state["dim"] is not None:
             dim = state["dim"]
         if ATTR_BRIGHTNESS in kwargs:
-            dim = (kwargs[ATTR_BRIGHTNESS] / 255) * 100
+            dim = percentage_to_ranged_value(BRIGHTNESS_SCALE, kwargs[ATTR_BRIGHTNESS])
         await self.connection.send_device_control(self.uuid, False, round(dim, 0))
